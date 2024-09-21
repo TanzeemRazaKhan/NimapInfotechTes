@@ -1,0 +1,67 @@
+﻿@model IEnumerable<NimapTest.Models.Product>
+
+@{
+    ViewBag.Title = "Product Management";
+    int totalPages = (int)(ViewBag.TotalPages ?? 1.0); // Casting to int
+    int currentPage = ViewBag.CurrentPage ?? 1;
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<h2>Product Management</h2>
+
+<!-- Link to Add New Product Page -->
+<a href="@Url.Action("Create", "Product")" class="btn btn-success">Add New Product</a>
+
+<hr />
+
+<!-- List of Products with Edit and Delete functionality -->
+<h3>Product List</h3>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Category ID</th>
+            <th>Category Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.ProductId</td>
+                <td>@product.ProductName</td>
+                <td>@product.CategoryId</td> <!-- Display Category ID -->
+                <td>@product.Categories.CategoryName</td> <!-- Display Category Name -->
+                <td style="display: flex;">
+                    <!-- Edit Button -->
+                    <a href="@Url.Action("Edit", "Product", new { id = product.ProductId })" class="btn btn-success btn-sm" style="margin-right: 5px;"><i class="fas fa-pencil-alt"></i> Edit</a>
+
+                    <!-- Delete Button -->
+                    @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { onsubmit = "return confirm('Are you sure you want to delete this product?');" }))
+                    {
+                        @Html.Hidden("id", product.ProductId)
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Delete</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    @if (totalPages > 1)
+    {
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="@(i == currentPage ? "active" : "")">
+                    <a href="@Url.Action("Index", "Product", new { page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    }
+</div>
