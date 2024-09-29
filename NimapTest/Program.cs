@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using NimapTest;
+using NimapTest.Models;
+using NimapTest.Services;
 using NimapTest.Servies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,21 @@ builder.Services.AddDbContext<DataDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connectionString);
 });
+
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+
+// Add services to the container.
+
+// Register the CategoryService for dependency injection
+//builder.Services.AddScoped<ICategoryService, Category>();
+
+
+
+
+
+// Add services to the container.
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

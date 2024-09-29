@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NimapTest.Models;
-using NimapTest.Servies;
+using NimapTest.Services;
 
 namespace NimapTest.Controllers
 {
     public class CategoryController : Controller
     {
-       
-        private readonly DataDbContext db;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(DataDbContext context)
+        public CategoryController(ICategoryService categoryService)
         {
-            db = context;
+            _categoryService = categoryService;
         }
+
         // GET: Category
         public ActionResult Index()
         {
-            var categories = db.Categories.ToList();
+            var categories = _categoryService.GetCategories();
             return View(categories);
         }
 
@@ -31,25 +30,20 @@ namespace NimapTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Categories.Add(category);
-                db.SaveChanges();
+                _categoryService.AddCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
         }
+
         public ActionResult Edit(int id)
         {
-            var category = db.Categories.Find(id);
+            var category = _categoryService.GetCategoryById(id);
             if (category == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(category);
-        }
-
-        private ActionResult HttpNotFound()
-        {
-            throw new NotImplementedException();
         }
 
         [HttpPost]
@@ -57,8 +51,7 @@ namespace NimapTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges();
+                _categoryService.UpdateCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -67,15 +60,8 @@ namespace NimapTest.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            var category = db.Categories.Find(id);
-            if (category != null)
-            {
-                db.Categories.Remove(category);
-                db.SaveChanges();
-            }
+            _categoryService.DeleteCategory(id);
             return RedirectToAction("Index");
         }
-
     }
-
 }
