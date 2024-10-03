@@ -16,11 +16,22 @@ namespace NimapTest.Services
             _context = context;
         }
 
-        // Get the list of all categories
-        public List<Category> GetCategories()
+        // Get a paginated list of categories
+        public List<Category> GetCategories(int page, int pageSize)
         {
-            return _context.Categories.ToList();
+            return _context.Categories
+                .OrderBy(c => c.CategoryId) // Sort categories by ID
+                .Skip((page - 1) * pageSize) // Skip records based on the current page
+                .Take(pageSize) // Take only the records for the current page
+                .ToList();
         }
+        // Get total count of categories for pagination
+        public int GetTotalCategoryCount()
+        {
+            return _context.Categories.Count();
+        }
+
+    
 
         // Get a single category by ID
         public Category GetCategoryById(int id)
@@ -42,15 +53,26 @@ namespace NimapTest.Services
             _context.SaveChanges();
         }
 
-        // Delete a category by ID
+ 
+
         public void DeleteCategory(int id)
         {
             var category = _context.Categories.Find(id);
+
+            // Check if any products are associated with this category
             if (category != null)
             {
+                bool hasProducts = _context.Products.Any(p => p.CategoryId == id);
+                if (hasProducts)
+                {
+                    // Optionally, you can log the attempt here
+                    throw new InvalidOperationException("Cannot delete this category because products are associated with it.");
+                }
+
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
             }
         }
+
     }
 }

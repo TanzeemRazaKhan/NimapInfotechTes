@@ -11,5 +11,8 @@ namespace NimapTest.Services
         void UpdateProduct(Product product);
         void DeleteProduct(int id);
         int GetTotalProductCount();
+       
+          
+        
     }
 }

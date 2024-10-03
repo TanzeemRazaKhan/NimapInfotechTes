@@ -14,6 +14,7 @@ namespace NimapTest.Models
         public Category() { }
 
 
+
     }
 
     //public class Category : ICategoryService

@@ -14,11 +14,17 @@ namespace NimapTest.Controllers
         }
 
         // GET: Category
-        public ActionResult Index()
+        public ActionResult Index(int page = 1, int pageSize = 10) 
         {
-            var categories = _categoryService.GetCategories();
+            var categories = _categoryService.GetCategories(page, pageSize);
+            var totalRecords = _categoryService.GetTotalCategoryCount();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            ViewBag.CurrentPage = page;
+
             return View(categories);
         }
+
 
         public ActionResult Create()
         {
@@ -58,10 +64,25 @@ namespace NimapTest.Controllers
         }
 
         [HttpPost]
+       
         public ActionResult Delete(int id)
         {
-            _categoryService.DeleteCategory(id);
-            return RedirectToAction("Index");
+            try
+            {
+                _categoryService.DeleteCategory(id); 
+                return RedirectToAction("Index");
+            }
+            catch (InvalidOperationException ex) 
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index"); 
+            }
+            catch (Exception ex) 
+            {
+                TempData["ErrorMessage"] = "An error occurred while trying to delete the category.";
+                return RedirectToAction("Index");
+            }
         }
+
     }
 }

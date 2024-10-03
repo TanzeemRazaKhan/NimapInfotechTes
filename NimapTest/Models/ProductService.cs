@@ -18,12 +18,16 @@ namespace NimapTest.Services
         public List<Product> GetProducts(int page, int pageSize)
         {
             return _context.Products.Include(p => p.Categories)
-                                     .OrderBy(p => p.ProductId)
-                                     .Skip((page - 1) * pageSize)
-                                     .Take(pageSize)
-                                     .ToList();
+                                    .OrderBy(p => p.ProductId)
+                                    .Skip((page - 1) * pageSize) 
+                                    .Take(pageSize)             
+                                    .ToList();
         }
 
+        public int GetTotalProductCount()
+        {
+            return _context.Products.Count();
+        }
         public Product GetProductById(int id)
         {
             return _context.Products.Include(p => p.Categories).FirstOrDefault(p => p.ProductId == id);
@@ -51,9 +55,9 @@ namespace NimapTest.Services
             }
         }
 
-        public int GetTotalProductCount()
-        {
-            return _context.Products.Count();
-        }
+        //public int GetTotalProductCount()
+        //{
+        //    return _context.Products.Count();
+        //}
     }
 }
